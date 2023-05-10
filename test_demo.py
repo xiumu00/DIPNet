@@ -16,18 +16,10 @@ def select_model(args, device):
     # Different networks are trained with input range of either [0,1] or [0,255]. The range is determined manually.
     model_id = args.model_id
     if model_id == 0:
-        # RFDN baseline, AIM 2020 Efficient SR Challenge winner
-        from models.team34_EDIPV1 import EDIPv1
-        name, data_range = f"{model_id:02}_team34_EDIPv1", 1.0
-        model_path = os.path.join('model_zoo', 'team34_EDIPv1.pth')
-        model = EDIPv1()
-        model.load_state_dict(torch.load(model_path), strict=True)
-    elif model_id == 1:
-        # RFDN baseline, AIM 2020 Efficient SR Challenge winner
-        from models.teme34_EDIPV2 import EDIPv2
-        name, data_range = f"{model_id:02}_team34_EDIPv2", 1.0
-        model_path = os.path.join('model_zoo', 'team34_EDIPv2.pth')
-        model = EDIPv2()
+        from models.DIPNet import DIPNet
+        name, data_range = f"{model_id:02}_DIPNet", 1.0
+        model_path = os.path.join('model_zoo', 'DIPNet.pth')
+        model = DIPNet()
         model.load_state_dict(torch.load(model_path), strict=True)
     else:
         raise NotImplementedError(f"Model {model_id} is not implemented.")

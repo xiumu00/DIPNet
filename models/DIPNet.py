@@ -16,9 +16,6 @@ def conv_layer(in_channels,
                out_channels,
                kernel_size,
                bias=False):
-    """
-    Re-write convolution layer for adaptive `padding`.
-    """
     kernel_size = _make_pair(kernel_size)
     padding = (int((kernel_size[0] - 1) / 2), 
                int((kernel_size[1] - 1) / 2))
@@ -30,21 +27,7 @@ def conv_layer(in_channels,
 
 
 def activation(act_type, inplace=True, neg_slope=0.05, n_prelu=1):
-    """
-    Activation functions for ['relu', 'lrelu', 'prelu'].
-
-    Parameters
-    ----------
-    act_type: str
-        one of ['relu', 'lrelu', 'prelu'].
-    inplace: bool
-        whether to use inplace operator.
-    neg_slope: float
-        slope of negative region for `lrelu` or `prelu`.
-    n_prelu: int
-        `num_parameters` for `prelu`.
-    ----------
-    """
+    
     act_type = act_type.lower()
     if act_type == 'relu':
         layer = nn.ReLU(inplace)
@@ -59,16 +42,7 @@ def activation(act_type, inplace=True, neg_slope=0.05, n_prelu=1):
 
 
 def sequential(*args):
-    """
-    Modules will be added to the a Sequential Container in the order they
-    are passed.
-    
-    Parameters
-    ----------
-    args: Definition of Modules in order.
-    -------
 
-    """
     if len(args) == 1:
         if isinstance(args[0], OrderedDict):
             raise NotImplementedError(
@@ -88,9 +62,6 @@ def pixelshuffle_block(in_channels,
                        out_channels,
                        upscale_factor=2,
                        kernel_size=3):
-    """
-    Upsample features according to `upscale_factor`.
-    """
     conv = conv_layer(in_channels,
                       out_channels * (upscale_factor ** 2),
                       kernel_size)
@@ -99,12 +70,6 @@ def pixelshuffle_block(in_channels,
 
 
 class ESA(nn.Module):
-    """
-    Modification of Enhanced Spatial Attention (ESA), which is proposed by 
-    `Residual Feature Aggregation Network for Image Super-Resolution`
-    Note: `conv_max` and `conv3_` are NOT used here, so the corresponding codes
-    are deleted.
-    """
 
     def __init__(self, esa_channels, n_feats, conv):
         super(ESA, self).__init__()
@@ -130,23 +95,13 @@ class ESA(nn.Module):
         return x * m
 
 
-
-
-
-
-
-class RLFB_afterPrune(nn.Module):
-    """
-    Residual Local Feature Block (RLFB).
-    add 11 conv and res
-    """
-
+class RRFB(nn.Module):
     def __init__(self,
                  in_channels,
                  mid_channels=None,
                  out_channels=None,
                  esa_channels=16):
-        super(RLFB_afterPrune, self).__init__()
+        super(RRFB, self).__init__()
 
         if mid_channels is None:
             mid_channels = in_channels
@@ -178,79 +133,28 @@ class RLFB_afterPrune(nn.Module):
         return out
 
 
-class RLFB_Ghost(nn.Module):
-    """
-    Residual Local Feature Block (RLFB).
-    """
-
-    def __init__(self,
-                 in_channels,
-                 mid_channels=None,
-                 out_channels=None,
-                 esa_channels=16):
-        super(RLFB_Ghost, self).__init__()
-
-        if mid_channels is None:
-            mid_channels = in_channels
-        if out_channels is None:
-            out_channels = in_channels
-
-        self.c1_r = default_ghost(in_channels, mid_channels, 3)
-        self.c2_r = default_ghost(mid_channels, mid_channels, 3)
-        self.c3_r = default_ghost(mid_channels, in_channels, 3)
-
-        self.c5 = default_ghost(in_channels, out_channels, 1)
-        self.esa = ESA(esa_channels, out_channels, nn.Conv2d)
-
-        self.act = activation('lrelu', neg_slope=0.05)
-
-    def forward(self, x):
-        out = (self.c1_r(x))
-        out = self.act(out)
-
-        out = (self.c2_r(out))
-        out = self.act(out)
-
-        out = (self.c3_r(out))
-        out = self.act(out)
-
-        out = out + x
-        out = self.esa(self.c5(out))
-
-        return out
-
-
-
-
 def make_model(args, parent=False):
-    model = EDIPv2()
+    model = DIPNet()
     return model
 
 
-class EDIPv2(nn.Module):
-    """
-    Residual Local Feature Network (RLFN)
-    Model definition of RLFN in `Residual Local Feature Network for
-    Efficient Super-Resolution`
-    """
+class DIPNet(nn.Module):
 
     def __init__(self,
                  in_channels=3,
                  out_channels=3,
                  feature_channels=44,
                  upscale=4):
-        super(EDIPv2, self).__init__()
+        super(DIPNet, self).__init__()
 
         self.conv_1 = conv_layer(in_channels,
                                        feature_channels,
                                        kernel_size=3)
 
-        self.block_1 = RLFB_afterPrune(feature_channels, mid_channels=38)
-        self.block_2 = RLFB_afterPrune(feature_channels, mid_channels=38)
-        self.block_3 = RLFB_afterPrune(feature_channels, mid_channels=38)
-        self.block_4 = RLFB_afterPrune(feature_channels, mid_channels=38)
-        # self.block_5 = RLFB_Rep(feature_channels)
-        # self.block_6 = RLFB_Rep(feature_channels)
+        self.block_1 = RRFB(feature_channels, mid_channels=38)
+        self.block_2 = RRFB(feature_channels, mid_channels=38)
+        self.block_3 = RRFB(feature_channels, mid_channels=38)
+        self.block_4 = RRFB(feature_channels, mid_channels=38)
 
         self.conv_2 = conv_layer(feature_channels,
                                    feature_channels,
@@ -267,8 +171,7 @@ class EDIPv2(nn.Module):
         out_b2 = self.block_2(out_b1)
         out_b3 = self.block_3(out_b2)
         out_b4 = self.block_4(out_b3)
-        # out_b5 = self.block_5(out_b4)
-        # out_b6 = self.block_6(out_b5)
+
 
         out_low_resolution = self.conv_2(out_b4) + out_feature
         output = self.upsampler(out_low_resolution)

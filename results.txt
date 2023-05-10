@@ -1,0 +1,2 @@
+Model               	Val PSNR  	Val Time [ms] 	Params [M]	FLOPs [G] 	Acts [M]	Mem [M] 	Conv    
+00_DIPNet           	29.04     	17.31         	0.243     	14.90     	72.97   	495.91  	  39    
