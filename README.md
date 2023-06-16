@@ -1,4 +1,12 @@
-# [NTIRE 2023 Challenge on Efficient Super-Resolution](https://cvlai.net/ntire/2023/) @ [CVPR 2023](https://cvpr2023.thecvf.com/)
+[# [NTIRE 2023 Challenge on Efficient Super-Resolution](https://cvlai.net/ntire/2023/) @ [CVPR 2023](https://cvpr2023.thecvf.com/)
+# DIPNet 
+This repository contains the source code for our paper:
+
+[DIPNet: Efficiency Distillation and Iterative Pruning for Image Super-Resolution](https://arxiv.org/pdf/2304.07018)<br/>
+CVPRW 2023 <br/>
+Lei Yu, Xinpeng Li, Youwei Li, Ting Jiang, Qi Wu, Haoqiang Fan, Shuaicheng Liu<br/>
+
+<img src="DIPNet.png">
 
 ## How to test the model?
 
@@ -30,6 +38,3 @@
     num_parameters = num_parameters / 10 ** 6
     print("{:>16s} : {:<.4f} [M]".format("#Params", num_parameters))
 ```
-
-## License and Acknowledgement
-This code repository is release under [MIT License](LICENSE). 
