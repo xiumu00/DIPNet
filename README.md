@@ -21,6 +21,8 @@ challenge while maintaining competitive super-resolution performance. Additional
 ducted to demonstrate the effectiveness of the proposed components. The results show that our approach achieves
 comparable performance in representative dataset DIV2K, both qualitatively and quantitatively, with faster inference
 and fewer number of network parameters.
+
+## Comparison with State-of-the-art Efficient Super-Resolution Methods
 <img src="DIPNet_efficient.png">
 
 ## Overview Architecture
