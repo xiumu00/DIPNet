@@ -38,3 +38,15 @@ Lei Yu, Xinpeng Li, Youwei Li, Ting Jiang, Qi Wu, Haoqiang Fan, Shuaicheng Liu<b
     num_parameters = num_parameters / 10 ** 6
     print("{:>16s} : {:<.4f} [M]".format("#Params", num_parameters))
 ```
+
+## Citations
+If our code helps your research or work, please consider citing our paper. The following is a BibTeX reference.
+```python
+@inproceedings{yu2023dipnet,
+  title={DIPNet: Efficiency Distillation and Iterative Pruning for Image Super-Resolution},
+  author={Yu, Lei and Li, Xinpeng and Li, Youwei and Jiang, Ting and Wu, Qi and Fan, Haoqiang and Liu, Shuaicheng},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={1692--1701},
+  year={2023}
+}
+```
