@@ -25,8 +25,8 @@ and fewer number of network parameters.
 ## Overview Architecture
 <img src="DIPNet.png">
 
-## Train
-We are organizing the training code and it will be released soon.
+## Training
+We provide our pretrained model weights. We are organizing the training code and it will be released soon. 
 
 ## Quick test
 How to test the model?
